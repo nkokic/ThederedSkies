@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 98bbdce1a590d5949808a86d4b11372e
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - rigidbody: {instanceID: 0}
+  - deathParticles: {fileID: 6572031526512385121, guid: ed0d0f2e8104a4249b16770e2eb4ea4b, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
