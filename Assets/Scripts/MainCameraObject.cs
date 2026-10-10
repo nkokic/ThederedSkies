@@ -11,11 +11,6 @@ public class MainCameraObject : MonoBehaviour
     Transform targetTransform;
 
     [SerializeField]
-    ScreenShake screenShake;
-
-    public ScreenShake ScreenShake => screenShake;
-
-    [SerializeField]
     float speed, reach;
 
     [SerializeField]
@@ -23,7 +18,8 @@ public class MainCameraObject : MonoBehaviour
 
     Func<Vector2> CursorSetMethod;
 
-    //Camera camera = Camera.main;
+    [SerializeField]
+    float maxShake, minShake = 0.1f, accumulatedShake = 0, shakeDamping = 0.1f;
 
     private void Awake()
     {
@@ -37,7 +33,15 @@ public class MainCameraObject : MonoBehaviour
         cursorPosition = CursorSetMethod();
 
         if(targetTransform)
+        {
             UpdateLocation();
+        }
+        else
+        {
+            FreeLook();
+        }
+
+        ScreenShake();
     }
 
     void UpdateLocation()
@@ -47,8 +51,25 @@ public class MainCameraObject : MonoBehaviour
             (Vector2)targetTransform.position + cursorPosition * reach * Camera.main.orthographicSize,
             speed * Time.deltaTime
             );
-        Camera.main.transform.position = locationT + new Vector3(0,0, Camera.main.transform.position.z) 
-            + (Vector3)ScreenShake.UpdateState(Time.deltaTime);
+        Camera.main.transform.position = locationT + new Vector3(0,0, Camera.main.transform.position.z);
+    }
+
+    void FreeLook()
+    {
+        Camera.main.transform.position += new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0) * speed * Time.deltaTime;
+    }
+
+    void ScreenShake()
+    {
+        if (accumulatedShake > minShake)
+            Camera.main.transform.position += new Vector3(UnityEngine.Random.value * 2f - 1f, UnityEngine.Random.value * 2f - 1f) * accumulatedShake;
+
+        accumulatedShake = Mathf.MoveTowards(accumulatedShake, 0, shakeDamping * Time.deltaTime);
+    }
+
+    static public void AddShake(float impulse)
+    {
+        singletonCamera.accumulatedShake = Mathf.MoveTowards(singletonCamera.accumulatedShake, singletonCamera.maxShake, impulse);
     }
 
     static public void SetTargetObject(Transform transform)
@@ -58,7 +79,7 @@ public class MainCameraObject : MonoBehaviour
 
     void ChooseCursor()
     {
-        if (JoystickPosition().magnitude > 0.01f)
+        if (JoystickPosition().magnitude > 0.1f)
             CursorSetMethod = JoystickPosition;
         if(new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y")).magnitude > 0.1f)
             CursorSetMethod = MousePosition;

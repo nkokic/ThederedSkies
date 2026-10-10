@@ -24,8 +24,8 @@ public class Player : CharacterBehaviour
     public override void Update()
     {
         Vector2 vector = new Vector2(
-                                    Input.GetAxisRaw("Horizontal"),
-                                    Input.GetAxisRaw("Vertical"));
+                                    Input.GetAxis("Horizontal"),
+                                    Input.GetAxis("Vertical"));
 
         character.GetVehicle().SetMovementVector(vector);
         character.GetVehicle().GetWeapon().TurretDriver.LookAt(
@@ -37,7 +37,7 @@ public class Player : CharacterBehaviour
         {
             Weapon weapon = character.GetVehicle().GetWeapon();
             weapon.Trigger();
-            MainCameraObject.singletonCamera.ScreenShake.ShakeScreen(weapon.Damage * weapon.TurretDriver.GetDirection());
+            MainCameraObject.AddShake(weapon.Damage / 1000f); // TODO: make sense of shaking numbers
         }
     }
 
